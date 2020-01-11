@@ -34,17 +34,47 @@ public class DetectionController {
             String filename = file.getOriginalFilename();
             File fileDir = DetectionController.getAbsoluteFilePath();
             File newFile = new File(fileDir.getAbsolutePath()+File.separator+filename);
-            System.out.println(newFile);
             BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(newFile));
             outputStream.write(file.getBytes());
             outputStream.flush();
             outputStream.close();
-            resultMap.put("msg", "上传成功");
+            System.out.println("success upload file: "+newFile);
+            String return_str = detect_img(newFile);
+            if (return_str==null){
+                throw  new IOException();
+            }
+            resultMap.put("msg", return_str);
         } catch (IOException e) {
             e.printStackTrace();
             resultMap.put("msg", "上传失败");
         }
         return resultMap;
+    }
+
+    private String detect_img(File newFile) {
+        try {
+//            java_detect
+//            String[] cmd = new String[]{"python3", "--version", newFile.toString()};
+            String[] cmd = new String[]{"python3", "--version"};
+            Process ps = Runtime.getRuntime().exec(cmd);
+            BufferedReader br = new BufferedReader(new InputStreamReader(ps.getInputStream()));
+            StringBuffer sb = new StringBuffer();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+
+                sb.append(line).append("\n");
+
+            }
+
+            String result = sb.toString();
+
+            System.out.println(result);
+            return result;
+        }catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @RequestMapping("download")
